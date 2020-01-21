@@ -127,11 +127,13 @@ public class EventLoggingProbeExtension implements ProbeExtension {
 		if (_logger.isLoggable(Level.INFO)) {
 			try {
 				double duration = (event.getEndTime() - event.getStartTime()) / 1000000.0; // convert nanoseconds to milliseconds
-				if (duration >= getMinDuration()) {
+				if (duration >= getMinDuration()) {   
 					LogRecordContext.addExtension("eventType", event.getType());
+					LogRecordContext.addExtension("duration_float", Double.toString(duration));
+					LogRecordContext.addExtension("durationThreshold_int", Integer.toString(getMinDuration()));
 					if (includeContextInfo && event.getContextInfo() != null) {
 						LogRecordContext.addExtension("contextInfo", event
-								.getContextInfo().toString());
+								.getContextInfo().toString()); 
 					}
 					if (includeContextInfo && event.getContextInfo() != null) {
 						_logger.info("END " + "requestID="
@@ -151,6 +153,8 @@ public class EventLoggingProbeExtension implements ProbeExtension {
 
 			} finally {
 				LogRecordContext.removeExtension("eventType");
+				LogRecordContext.removeExtension("duration_float");
+				LogRecordContext.removeExtension("durationThreshold_int");
 				if (includeContextInfo && event.getContextInfo() != null) {
 					LogRecordContext.removeExtension("contextInfo");
 				}
